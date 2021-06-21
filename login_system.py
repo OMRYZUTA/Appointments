@@ -1,9 +1,19 @@
 from user import User
-
+from db_connector import DbConnector
+import sqlite3
 
 class LoginSystem():
-    def Login(self, ID, name, password):
+
+    @staticmethod
+    def Login(user_name, password):
         pass
 
-    def SignUp(self, ID, name, password):
-        return User(ID, name, password)
+    @staticmethod
+    def SignUp(user_name, name, password):
+        try:
+            DbConnector.add_user(User(user_name, name, password))
+
+        except sqlite3.IntegrityError:
+            return False
+
+        return True
