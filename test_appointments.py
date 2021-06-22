@@ -2,10 +2,11 @@ import os
 import sqlite3
 import unittest
 import uuid
-
+import time
 
 from sqlite3 import Error
 from user import User
+from doctor import Doctor
 from login_system import LoginSystem
 from db_connector import DbConnector
 
@@ -57,6 +58,40 @@ class TestAppointments(unittest.TestCase):
         (user_name, name) = user_tuple
         self.assertEqual(user_name, JON_USER_NAME)
         self.assertEqual(name, JON_NAME)
+
+    def test_doctor_init(self):
+        doctor = Doctor(AVI_USER_NAME, AVI_NAME, AVI_PASSWORD)
+        self.assertEqual(doctor.name, AVI_NAME)
+        self.assertEqual(doctor.user_name, AVI_USER_NAME)
+
+    def test_doctor_TryTreat(self):
+        doctor = Doctor(AVI_USER_NAME, AVI_NAME, AVI_PASSWORD)
+        result = doctor.try_treat(YOSI_USER_NAME, YOSI_NAME)
+        self.assertTrue(result)
+
+    def test_doctor_TryTreat_delay(self):
+        doctor = Doctor(AVI_USER_NAME, AVI_NAME, AVI_PASSWORD)
+        doctor.try_treat(YOSI_USER_NAME, YOSI_NAME)
+        result = doctor.try_treat(JON_USER_NAME, JON_NAME)
+        for i in range(5):
+            time.sleep(1)
+        self.assertFalse(result)
+        for i in range(100):
+            time.sleep(1)
+        result = doctor.try_treat(JON_USER_NAME, JON_NAME)
+        self.assertTrue(result)
+
+    def test_doctor_TryTreat_waiting_list_add(self):
+        doctor = Doctor(AVI_USER_NAME, AVI_NAME, AVI_PASSWORD)
+        doctor.try_treat(YOSI_USER_NAME, YOSI_NAME)
+        for i in range(10):
+            time.sleep(1)
+        result = doctor.try_treat(JON_USER_NAME, JON_NAME)
+        self.assertFalse(result)
+        waiting_list = doctor.waiting_list
+        self.assertEqual(len(waiting_list), 1)
+        result = doctor.try_treat(JON_USER_NAME, JON_NAME)
+        self.assertEqual(len(waiting_list), 2)
 
 
 if __name__ == "__main__":
