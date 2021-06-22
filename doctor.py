@@ -16,11 +16,11 @@ class Doctor(User):
             time.sleep(1)
         self.is_busy = False
 
-    def try_treat(self, user_name, name):
+    def try_treat(self, patient):
         result = False
         if (not self.is_busy):
             threading.Thread(target=self.treat_patient).start()
             result = True
         else:
-            self.waiting_list.append(user_name)
+            self.waiting_list.append(patient)
         return result

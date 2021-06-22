@@ -1,4 +1,5 @@
 import os
+from patient import Patient
 import sqlite3
 import unittest
 import uuid
@@ -27,12 +28,14 @@ MEDICAL_DATABASE_NAME = 'Medical.db'
 
 class TestAppointments(unittest.TestCase):
     def setUp(self):
-        self.user_avi = User(AVI_USER_NAME, AVI_NAME, AVI_PASSWORD)
+        self.patient_avi = Patient(AVI_USER_NAME, AVI_NAME, AVI_PASSWORD)
+        self.patient_jon = Patient(JON_USER_NAME, JON_NAME, JON_PASSWORD)
+        self.patient_yosi = Patient(YOSI_USER_NAME, YOSI_NAME, YOSI_PASSWORD)
 
     def test_user(self):
-        self.assertEqual(AVI_NAME, self.user_avi.name)
-        self.assertEqual(AVI_USER_NAME, self.user_avi.user_name)
-        self.assertEqual(AVI_PASSWORD, self.user_avi.password)
+        self.assertEqual(AVI_NAME, self.patient_avi.name)
+        self.assertEqual(AVI_USER_NAME, self.patient_avi.user_name)
+        self.assertEqual(AVI_PASSWORD, self.patient_avi.password)
 
     def test_login_system_sign_up(self):
         yosi_sign_up_result = LoginSystem.SignUp(
@@ -46,11 +49,11 @@ class TestAppointments(unittest.TestCase):
         jon_sign_up_result = LoginSystem.SignUp(
             JON_USER_NAME, JON_NAME, JON_PASSWORD)
         self.assertFalse(jon_sign_up_result)
-        self.user_jon = User(JON_USER_NAME, JON_NAME, JON_PASSWORD)
-        user_tuple = DbConnector.get_user(self.user_jon.user_name)
+        user_jon = User(JON_USER_NAME, JON_NAME, JON_PASSWORD)
+        user_tuple = DbConnector.get_user(user_jon.user_name)
         (user_name, name) = user_tuple
-        self.assertEqual(user_name, self.user_jon.user_name)
-        self.assertEqual(name, self.user_jon.name)
+        self.assertEqual(user_name, user_jon.user_name)
+        self.assertEqual(name, user_jon.name)
 
     def test_auth_jon(self):
         user_tuple = DbConnector.auth_user(
@@ -66,32 +69,37 @@ class TestAppointments(unittest.TestCase):
 
     def test_doctor_TryTreat(self):
         doctor = Doctor(AVI_USER_NAME, AVI_NAME, AVI_PASSWORD)
-        result = doctor.try_treat(YOSI_USER_NAME, YOSI_NAME)
+        result = doctor.try_treat(self.patient_avi)
         self.assertTrue(result)
 
     def test_doctor_TryTreat_delay(self):
         doctor = Doctor(AVI_USER_NAME, AVI_NAME, AVI_PASSWORD)
-        doctor.try_treat(YOSI_USER_NAME, YOSI_NAME)
-        result = doctor.try_treat(JON_USER_NAME, JON_NAME)
+        doctor.try_treat(self.patient_yosi)
+        result = doctor.try_treat(self.patient_jon)
         for i in range(5):
             time.sleep(1)
         self.assertFalse(result)
         for i in range(100):
             time.sleep(1)
-        result = doctor.try_treat(JON_USER_NAME, JON_NAME)
+        result = doctor.try_treat(self.patient_jon)
         self.assertTrue(result)
 
     def test_doctor_TryTreat_waiting_list_add(self):
         doctor = Doctor(AVI_USER_NAME, AVI_NAME, AVI_PASSWORD)
-        doctor.try_treat(YOSI_USER_NAME, YOSI_NAME)
+        doctor.try_treat(self.patient_yosi)
         for i in range(10):
             time.sleep(1)
-        result = doctor.try_treat(JON_USER_NAME, JON_NAME)
+        result = doctor.try_treat(self.patient_jon)
         self.assertFalse(result)
         waiting_list = doctor.waiting_list
         self.assertEqual(len(waiting_list), 1)
-        result = doctor.try_treat(JON_USER_NAME, JON_NAME)
+        result = doctor.try_treat(self.patient_jon)
         self.assertEqual(len(waiting_list), 2)
+
+    def test_doctor_init(self):
+        patient = Patient(JON_USER_NAME, JON_NAME, JON_PASSWORD)
+        self.assertEqual(patient.name, JON_NAME)
+        self.assertEqual(patient.user_name, JON_USER_NAME)
 
 
 if __name__ == "__main__":
