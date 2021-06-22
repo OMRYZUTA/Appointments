@@ -47,9 +47,16 @@ class TestAppointments(unittest.TestCase):
         self.assertFalse(jon_sign_up_result)
         self.user_jon = User(JON_USER_NAME, JON_NAME, JON_PASSWORD)
         user_tuple = DbConnector.get_user(self.user_jon.user_name)
-        (user_name, name, password) = user_tuple
-        jon = User(user_name, name, password)
-        self.assertEqual(jon.user_name, self.user_jon.user_name)
+        (user_name, name) = user_tuple
+        self.assertEqual(user_name, self.user_jon.user_name)
+        self.assertEqual(name, self.user_jon.name)
+
+    def test_auth_jon(self):
+        user_tuple = DbConnector.auth_user(
+            JON_USER_NAME, JON_PASSWORD)
+        (user_name, name) = user_tuple
+        self.assertEqual(user_name, JON_USER_NAME)
+        self.assertEqual(name, JON_NAME)
 
 
 if __name__ == "__main__":

@@ -2,6 +2,7 @@ from user import User
 from db_connector import DbConnector
 import sqlite3
 
+
 class LoginSystem():
 
     @staticmethod
@@ -13,7 +14,7 @@ class LoginSystem():
         try:
             DbConnector.add_user(User(user_name, name, password))
 
-        except sqlite3.IntegrityError:
+        except sqlite3.IntegrityError:  # user already exist
             return False
 
         return True

@@ -23,11 +23,19 @@ class DbConnector():
             cursor = sqliteConnection.cursor()
             cursor.execute(
                 "INSERT INTO users (user_name, name, password) VALUES( ?,? ,? );", (user.user_name, user.name, user.password))
-                
+
     @staticmethod
     def get_user(user_name):
         with sqlite3.connect(MEDICAL_DATABASE_NAME) as sqliteConnection:
             cursor = sqliteConnection.cursor()
             result = cursor.execute(
-                "SELECT * FROM users WHERE user_name = ?", [user_name])
+                "SELECT user_name, name FROM users WHERE user_name = ?", [user_name])
+            return(tuple(result)[0])
+
+    @staticmethod
+    def auth_user(user_name, password):
+        with sqlite3.connect(MEDICAL_DATABASE_NAME) as sqliteConnection:
+            cursor = sqliteConnection.cursor()
+            result = cursor.execute(
+                "SELECT user_name, name FROM users WHERE user_name = ? AND password = ?", [user_name, password])
             return(tuple(result)[0])
