@@ -10,6 +10,7 @@ from user import User
 from doctor import Doctor
 from login_system import LoginSystem
 from db_connector import DbConnector
+from waiting_list import WaitingList
 
 AVI_NAME = 'Avi Cohen'
 AVI_USER_NAME = 'Avi1984'
@@ -25,17 +26,19 @@ JON_PASSWORD = '234332'
 
 MEDICAL_DATABASE_NAME = 'Medical.db'
 
+AVI_JON_APPOINTMENT_DATE = '23432'
+
 
 class TestAppointments(unittest.TestCase):
     def setUp(self):
-        self.patient_avi = Patient(AVI_USER_NAME, AVI_NAME, AVI_PASSWORD)
+        self.doctor_avi = Doctor(AVI_USER_NAME, AVI_NAME, AVI_PASSWORD)
         self.patient_jon = Patient(JON_USER_NAME, JON_NAME, JON_PASSWORD)
         self.patient_yosi = Patient(YOSI_USER_NAME, YOSI_NAME, YOSI_PASSWORD)
 
     def test_user(self):
-        self.assertEqual(AVI_NAME, self.patient_avi.name)
-        self.assertEqual(AVI_USER_NAME, self.patient_avi.user_name)
-        self.assertEqual(AVI_PASSWORD, self.patient_avi.password)
+        self.assertEqual(AVI_NAME, self.doctor_avi.name)
+        self.assertEqual(AVI_USER_NAME, self.doctor_avi.user_name)
+        self.assertEqual(AVI_PASSWORD, self.doctor_avi.password)
 
     def test_login_system_sign_up(self):
         yosi_sign_up_result = LoginSystem.SignUp(
@@ -69,7 +72,7 @@ class TestAppointments(unittest.TestCase):
 
     def test_doctor_TryTreat(self):
         doctor = Doctor(AVI_USER_NAME, AVI_NAME, AVI_PASSWORD)
-        result = doctor.try_treat(self.patient_avi)
+        result = doctor.try_treat(self.doctor_avi)
         self.assertTrue(result)
 
     def test_doctor_TryTreat_delay(self):
@@ -96,10 +99,21 @@ class TestAppointments(unittest.TestCase):
         result = doctor.try_treat(self.patient_jon)
         self.assertEqual(len(waiting_list), 2)
 
-    def test_doctor_init(self):
+    def test_patient_init(self):
         patient = Patient(JON_USER_NAME, JON_NAME, JON_PASSWORD)
         self.assertEqual(patient.name, JON_NAME)
         self.assertEqual(patient.user_name, JON_USER_NAME)
+
+    def test_waiting_list_init(self):
+        waiting_list = WaitingList(self.doctor_avi.user_name, [
+                                   JON_USER_NAME, YOSI_USER_NAME])
+        self.assertEqual(waiting_list.doctor_name, self.doctor_avi.user_name)
+        self.assertEqual(waiting_list.patients_list[0], JON_USER_NAME)
+        self.assertEqual(waiting_list.patients_list[1], YOSI_USER_NAME)
+
+    def test_patient_began_appointment(self):
+        self.patient_jon.began_appointment(
+            self.doctor_avi.user_name,  AVI_JON_APPOINTMENT_DATE)
 
 
 if __name__ == "__main__":
