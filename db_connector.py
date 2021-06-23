@@ -13,6 +13,17 @@ APPOINTMENT_TABLE_QUERY = '''CREATE TABLE IF NOT EXISTS appointments (
                                         date text NOT NULL,
                                         id text PRIMARY KEY);'''
 
+DOCTOR_TABLE_QUERY = '''CREATE TABLE IF NOT EXISTS doctors (
+                                        user_name TEXT PRIMARY KEY,
+                                        name TEXT NOT NULL,
+                                        password text NOT NULL);'''
+
+PATIENT_TABLE_QUERY = '''CREATE TABLE IF NOT EXISTS patients (
+                                        user_name TEXT PRIMARY KEY,
+                                        name TEXT NOT NULL,
+                                        password text NOT NULL);'''
+
+
 APPOINTMENT_TABLE_NAME = 'appointments'
 
 
@@ -32,6 +43,20 @@ class DbConnector():
             sqliteConnection.commit()
 
     @staticmethod
+    def create_doctor_table():
+        with sqlite3.connect(MEDICAL_DATABASE_NAME) as sqliteConnection:
+            cursor = sqliteConnection.cursor()
+            cursor.execute(DOCTOR_TABLE_QUERY)
+            sqliteConnection.commit()
+
+    @staticmethod
+    def create_patient_table():
+        with sqlite3.connect(MEDICAL_DATABASE_NAME) as sqliteConnection:
+            cursor = sqliteConnection.cursor()
+            cursor.execute(PATIENT_TABLE_QUERY)
+            sqliteConnection.commit()
+
+    @staticmethod
     def add_appointment(appointment):
         with sqlite3.connect(MEDICAL_DATABASE_NAME) as sqliteConnection:
             cursor = sqliteConnection.cursor()
@@ -44,6 +69,20 @@ class DbConnector():
             cursor = sqliteConnection.cursor()
             cursor.execute(
                 "INSERT INTO users (user_name, name, password) VALUES( ?,? ,? );", (user.user_name, user.name, user.password))
+
+    @staticmethod
+    def add_doctor(doctor):
+        with sqlite3.connect(MEDICAL_DATABASE_NAME) as sqliteConnection:
+            cursor = sqliteConnection.cursor()
+            cursor.execute(
+                "INSERT INTO doctors (user_name, name, password) VALUES( ?,? ,? );", (doctor.user_name, doctor.name, doctor.password))
+
+    @staticmethod
+    def add_patient(patient):
+        with sqlite3.connect(MEDICAL_DATABASE_NAME) as sqliteConnection:
+            cursor = sqliteConnection.cursor()
+            cursor.execute(
+                "INSERT INTO patients (user_name, name, password) VALUES( ?,? ,? );", (patient.user_name, patient.name, patient.password))
 
     @staticmethod
     def get_appointments_by_patient_user_name(patient_user_name):
