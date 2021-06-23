@@ -115,6 +115,14 @@ class TestAppointments(unittest.TestCase):
         self.patient_jon.began_appointment(
             self.doctor_avi.user_name,  AVI_JON_APPOINTMENT_DATE)
 
+    def test_waitig_list_add_patient(self):
+        waiting_list = WaitingList(
+            self.doctor_avi.user_name, [self.patient_jon])
+        waiting_list.patients_list.append(self.patient_yosi)
+        user_name_list = waiting_list.get_waiting_list_for_patient()
+        self.assertEqual(user_name_list[0], self.patient_jon.user_name)
+        self.assertEqual(user_name_list[1], self.patient_yosi.user_name)
+
 
 if __name__ == "__main__":
     unittest.main()
