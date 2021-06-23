@@ -1,4 +1,6 @@
 from user import User
+from db_connector import DbConnector
+from appointment import Appointment
 
 
 class Patient(User):
@@ -6,7 +8,6 @@ class Patient(User):
         super().__init__(user_name, name, password)
         self.waiting_list = {}
 
-    def began_appointment(self, doctor_user_name, appointment_date):
-        self.waiting_list.pop(doctor_user_name, None)
-        print(
-            f'{self.user_name} got appointment with {doctor_user_name} at {appointment_date}')
+    def began_appointment(self, appointment):
+        self.waiting_list.pop(appointment.doctor_user_name, None)
+        DbConnector.add_appointment(appointment)
