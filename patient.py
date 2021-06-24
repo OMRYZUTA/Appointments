@@ -18,3 +18,6 @@ class Patient(User):
             self.waiting_lists[doctor_user_name].remove_patient(self)
             result = True
         return result
+
+    def add_waiting_list(self, waiting_list):
+        self.waiting_lists[waiting_list.doctor_user_name] = waiting_list

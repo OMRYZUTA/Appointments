@@ -13,7 +13,8 @@ class WaitingList():
         return list(map(lambda patient: patient.user_name, self.patients_list))
 
     def remove_patient(self, patient):
-        self.patients_list.remove(patient)
+        if patient in self.patients_list:
+            self.patients_list.remove(patient)
 
     def append_patient(self, patient):
         if(self.patients_list == None):
@@ -23,4 +24,10 @@ class WaitingList():
             self.doctor_user_name, patient.user_name, self.id, str(datetime.datetime.now()))
 
     def is_empty(self):
-        return (len(self.patients_list) == 0)
+        return (self.patients_list == None or len(self.patients_list) == 0)
+
+    def get_next_patient(self):
+        next_patient = None
+        if not self.is_empty():
+            next_patient = self.patients_list[0]
+        return next_patient
