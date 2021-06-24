@@ -12,7 +12,6 @@ class Controller():
 
     @staticmethod
     def create_database():
-        DbConnector.create_user_table()
         DbConnector.create_appointment_table()
         DbConnector.create_doctor_table()
         DbConnector.create_patient_table()

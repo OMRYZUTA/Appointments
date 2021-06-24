@@ -19,7 +19,7 @@ APPOINTMENT_TABLE_QUERY = '''CREATE TABLE IF NOT EXISTS appointments (
 DOCTOR_TABLE_QUERY = '''CREATE TABLE IF NOT EXISTS doctors (
                                         user_name TEXT PRIMARY KEY,
                                         name TEXT NOT NULL,
-                                        password text NOT NULL);'''
+                                        password TEXT NOT NULL);'''
 
 PATIENT_TABLE_QUERY = '''CREATE TABLE IF NOT EXISTS patients (
                                         user_name TEXT PRIMARY KEY,
@@ -39,12 +39,6 @@ APPOINTMENT_TABLE_NAME = 'appointments'
 
 
 class DbConnector():
-    @staticmethod
-    def create_user_table():
-        with sqlite3.connect(MEDICAL_DATABASE_NAME) as sqliteConnection:
-            cursor = sqliteConnection.cursor()
-            cursor.execute(USER_TABLE_QUERY)
-            sqliteConnection.commit()
 
     @staticmethod
     def create_appointment_table():
@@ -80,13 +74,6 @@ class DbConnector():
             cursor = sqliteConnection.cursor()
             cursor.execute(
                 "INSERT INTO appointments (patient_user_name, doctor_user_name, date, id) VALUES( ?,? ,?, ?);", (appointment.patient_user_name, appointment.doctor_user_name, appointment.appointment_date, appointment.appointment_id))
-
-    @staticmethod
-    def add_user(user):
-        with sqlite3.connect(MEDICAL_DATABASE_NAME) as sqliteConnection:
-            cursor = sqliteConnection.cursor()
-            cursor.execute(
-                "INSERT INTO users (user_name, name, password) VALUES( ?,? ,? );", (user.user_name, user.name, user.password))
 
     @staticmethod
     def add_doctor(doctor):
@@ -125,20 +112,12 @@ class DbConnector():
             return tuple(result)
 
     @staticmethod
-    def get_appointments_get_waiting_list_members_by_list_id(waiting_list_id):
+    def get_waiting_list_members_by_doctor_user_name(doctor_user_name):
         with sqlite3.connect(MEDICAL_DATABASE_NAME) as sqliteConnection:
             cursor = sqliteConnection.cursor()
             result = cursor.execute(
-                "SELECT * FROM waiting_list_members WHERE id = ?", [waiting_list_id])
+                "SELECT patient_user_name FROM waiting_list_members WHERE doctor_user_name = ?", [doctor_user_name])
             return tuple(result)
-
-    @staticmethod
-    def get_user(user_name):
-        with sqlite3.connect(MEDICAL_DATABASE_NAME) as sqliteConnection:
-            cursor = sqliteConnection.cursor()
-            result = cursor.execute(
-                "SELECT user_name, name FROM users WHERE user_name = ?", [user_name])
-            return(tuple(result)[0])
 
     @staticmethod
     def auth_patient(user_name, password):
@@ -153,5 +132,5 @@ class DbConnector():
         with sqlite3.connect(MEDICAL_DATABASE_NAME) as sqliteConnection:
             cursor = sqliteConnection.cursor()
             result = cursor.execute(
-                "SELECT user_name, name, password FROM doctors WHERE user_name = ? AND password = ?", [user_name, password])
+                "SELECT user_name, name, password waiting_list_id FROM doctors WHERE user_name = ? AND password = ?", [user_name, password])
             return(tuple(result))

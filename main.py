@@ -2,7 +2,6 @@ from db_connector import DbConnector
 from controller import Controller
 
 
-
 def main():
     Controller.run()
 

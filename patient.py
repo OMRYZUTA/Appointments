@@ -4,7 +4,7 @@ from appointment import Appointment
 
 
 class Patient(User):
-    def __init__(self, user_name, name, password):
+    def __init__(self, user_name, name=None, password=None):
         super().__init__(user_name, name, password)
         self.waiting_lists = {}
 

@@ -9,10 +9,13 @@ import uuid
 
 
 class Doctor(User):
-    def __init__(self, user_name, name, password):
+    def __init__(self, user_name, name, password, waiting_list=None):
         super().__init__(user_name, name, password)
         self.is_busy = False
-        self.waiting_list = WaitingList(user_name)
+        if waiting_list == None:
+            self.waiting_list = WaitingList(user_name)
+        else:
+            self.waiting_list = waiting_list
 
     def treat_patient(self):
         self.is_busy = True

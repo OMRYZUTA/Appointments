@@ -57,22 +57,22 @@ class TestAppointments(unittest.TestCase):
         self.assertEqual(yosi_log_in_result.user_name, YOSI_USER_NAME)
 
     def test_login_system_doctor_log_in(self):
+        waiting_list = WaitingList(AVI_USER_NAME)
+        waiting_list.append_patient(self.patient_jon)
         avi_log_in_result = LoginSystem.doctor_log_in(
             AVI_USER_NAME, AVI_PASSWORD)
         self.assertEqual(avi_log_in_result.user_name, AVI_USER_NAME)
+        self.assertEqual(
+            avi_log_in_result.waiting_list.get_next_patient().user_name, JON_USER_NAME)
+        waiting_list.remove_patient(self.patient_jon)
 
     def test_database_exists(self):
         self.assertTrue(os.path.isfile(MEDICAL_DATABASE_NAME))
 
     def test_jon_in_database(self):
-        jon_sign_up_result = LoginSystem.SignUp(
+        jon_sign_up_result = LoginSystem.patient_sign_up(
             JON_USER_NAME, JON_NAME, JON_PASSWORD)
         self.assertFalse(jon_sign_up_result)
-        user_jon = User(JON_USER_NAME, JON_NAME, JON_PASSWORD)
-        user_tuple = DbConnector.get_user(user_jon.user_name)
-        (user_name, name) = user_tuple
-        self.assertEqual(user_name, user_jon.user_name)
-        self.assertEqual(name, user_jon.name)
 
     def test_doctor_init(self):
         doctor = Doctor(AVI_USER_NAME, AVI_NAME, AVI_PASSWORD)
@@ -137,6 +137,7 @@ class TestAppointments(unittest.TestCase):
         user_name_list = waiting_list.get_waiting_list_for_patient()
         self.assertEqual(user_name_list[0], self.patient_jon.user_name)
         self.assertEqual(user_name_list[1], self.patient_yosi.user_name)
+        waiting_list.remove_patient(self.patient_yosi)
 
     def test_appointment_in_db(self):
         AVI_JON_APPOINTMENT_DATE = str(datetime.datetime.now())
@@ -185,8 +186,8 @@ class TestAppointments(unittest.TestCase):
         self.doctor_avi.try_treat(self.patient_yosi)
         DbConnector.add_waiting_list_member(
             self.doctor_avi.user_name, self.patient_yosi.user_name, self.doctor_avi.waiting_list.id, str(datetime.datetime.now()))
-        list_tuple = DbConnector.get_appointments_get_waiting_list_members_by_list_id(
-            self.doctor_avi.waiting_list.id)
+        list_tuple = DbConnector.get_waiting_list_members_by_doctor_user_name(
+            AVI_USER_NAME)
         self.assertTrue(len(list_tuple) >= 1)
 
     def test_waiting_list_is_empty(self):
