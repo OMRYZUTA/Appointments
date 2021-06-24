@@ -6,3 +6,6 @@ class WaitingList():
 
     def get_waiting_list_for_patient(self):
         return list(map(lambda patient: patient.user_name, self.patients_list))
+
+    def remove_patient(self, patient):
+        self.patients_list.remove(patient)

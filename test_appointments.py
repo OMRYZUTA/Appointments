@@ -13,6 +13,7 @@ from login_system import LoginSystem
 from db_connector import DbConnector
 from waiting_list import WaitingList
 from appointment import Appointment
+from appointment_scheduler import AppointmentScheduler
 
 AVI_NAME = 'Avi Cohen'
 AVI_USER_NAME = 'Avi1984'
@@ -153,6 +154,25 @@ class TestAppointments(unittest.TestCase):
         self.assertEqual(appointment.appointment_date,
                          AVI_JON_APPOINTMENT_DATE)
         self.assertEqual(appointment.appointment_id, AVI_JON_APPOINTMENT_ID)
+
+    def test_remove_from_list(self):
+        self.patient_jon.waiting_lists[AVI_USER_NAME] = WaitingList(
+            AVI_USER_NAME, [self.patient_yosi, self.patient_jon])
+        result = self.patient_jon.remove_from_waiting_list(AVI_USER_NAME)
+        self.assertTrue(result)
+
+    def test_remove_from_list_fails(self):
+        self.patient_jon.waiting_lists[AVI_USER_NAME] = WaitingList(
+            AVI_USER_NAME, [self.patient_jon, self.patient_yosi])
+        self.patient_jon.began_appointment(Appointment(
+            JON_USER_NAME, AVI_USER_NAME, str(datetime.datetime.now), str(uuid.uuid1())))
+        result = self.patient_jon.remove_from_waiting_list(AVI_USER_NAME)
+        self.assertFalse(result)
+
+    def test_appointment_scheduler_init(self):
+        appScheduler = AppointmentScheduler([self.doctor_avi])
+        doctor_list = appScheduler.get_available_doctors()
+        self.assertEqual(doctor_list[0].user_name, AVI_USER_NAME)
 
 
 if __name__ == "__main__":
