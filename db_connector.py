@@ -11,7 +11,10 @@ APPOINTMENT_TABLE_QUERY = '''CREATE TABLE IF NOT EXISTS appointments (
                                         patient_user_name TEXT NOT NULL,
                                         doctor_user_name TEXT NOT NULL,
                                         date text NOT NULL,
-                                        id text PRIMARY KEY);'''
+                                        id text PRIMARY KEY,
+                                        FOREIGN KEY (patient_user_name) REFERENCES patients(user_name),
+                                        FOREIGN KEY (doctor_user_name) REFERENCES doctors(user_name)
+                                        );'''
 
 DOCTOR_TABLE_QUERY = '''CREATE TABLE IF NOT EXISTS doctors (
                                         user_name TEXT PRIMARY KEY,
@@ -22,6 +25,14 @@ PATIENT_TABLE_QUERY = '''CREATE TABLE IF NOT EXISTS patients (
                                         user_name TEXT PRIMARY KEY,
                                         name TEXT NOT NULL,
                                         password text NOT NULL);'''
+
+WAITING_LIST_MEMBERS_TABLE_QUERY = '''CREATE TABLE IF NOT EXISTS waiting_list_members (
+                                        doctor_user_name NOT NULL,
+                                        patient_user_name TEXT NOT NULL,
+                                        id text NOT NULL,
+                                        date text NOT NULL,
+                                        FOREIGN KEY (patient_user_name) REFERENCES patients(user_name),
+                                        FOREIGN KEY (doctor_user_name) REFERENCES doctors(user_name));'''
 
 
 APPOINTMENT_TABLE_NAME = 'appointments'
@@ -40,6 +51,13 @@ class DbConnector():
         with sqlite3.connect(MEDICAL_DATABASE_NAME) as sqliteConnection:
             cursor = sqliteConnection.cursor()
             cursor.execute(APPOINTMENT_TABLE_QUERY)
+            sqliteConnection.commit()
+
+    @staticmethod
+    def create_waiting_list_member_table():
+        with sqlite3.connect(MEDICAL_DATABASE_NAME) as sqliteConnection:
+            cursor = sqliteConnection.cursor()
+            cursor.execute(WAITING_LIST_MEMBERS_TABLE_QUERY)
             sqliteConnection.commit()
 
     @staticmethod
@@ -85,11 +103,26 @@ class DbConnector():
                 "INSERT INTO patients (user_name, name, password) VALUES( ?,? ,? );", (patient.user_name, patient.name, patient.password))
 
     @staticmethod
+    def add_waiting_list_member(doctor_user_name, patient_user_name, waiting_list_id, date):
+        with sqlite3.connect(MEDICAL_DATABASE_NAME) as sqliteConnection:
+            cursor = sqliteConnection.cursor()
+            cursor.execute(
+                "INSERT INTO waiting_list_members (doctor_user_name, patient_user_name, id, date) VALUES(?, ?, ?, ?);", (doctor_user_name, patient_user_name, waiting_list_id, date))
+
+    @staticmethod
     def get_appointments_by_patient_user_name(patient_user_name):
         with sqlite3.connect(MEDICAL_DATABASE_NAME) as sqliteConnection:
             cursor = sqliteConnection.cursor()
             result = cursor.execute(
                 "SELECT * FROM appointments WHERE patient_user_name = ?", [patient_user_name])
+            return tuple(result)
+
+    @staticmethod
+    def get_appointments_get_waiting_list_members_by_list_id(waiting_list_id):
+        with sqlite3.connect(MEDICAL_DATABASE_NAME) as sqliteConnection:
+            cursor = sqliteConnection.cursor()
+            result = cursor.execute(
+                "SELECT * FROM waiting_list_members WHERE id = ?", [waiting_list_id])
             return tuple(result)
 
     @staticmethod

@@ -2,13 +2,14 @@ import time
 from user import User
 import threading
 import random
+from waiting_list import WaitingList
 
 
 class Doctor(User):
     def __init__(self, user_name, name, password):
         super().__init__(user_name, name, password)
         self.is_busy = False
-        self.waiting_list = []
+        self.waiting_list = WaitingList(user_name)
 
     def treat_patient(self):
         self.is_busy = True
@@ -22,5 +23,5 @@ class Doctor(User):
             threading.Thread(target=self.treat_patient).start()
             result = True
         else:
-            self.waiting_list.append(patient)
+            self.waiting_list.append_patient(patient)
         return result

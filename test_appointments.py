@@ -113,7 +113,8 @@ class TestAppointments(unittest.TestCase):
     def test_waiting_list_init(self):
         waiting_list = WaitingList(self.doctor_avi.user_name, [
                                    JON_USER_NAME, YOSI_USER_NAME])
-        self.assertEqual(waiting_list.doctor_name, self.doctor_avi.user_name)
+        self.assertEqual(waiting_list.doctor_user_name,
+                         self.doctor_avi.user_name)
         self.assertEqual(waiting_list.patients_list[0], JON_USER_NAME)
         self.assertEqual(waiting_list.patients_list[1], YOSI_USER_NAME)
 
@@ -174,6 +175,14 @@ class TestAppointments(unittest.TestCase):
         doctor_list = appScheduler.get_available_doctors()
         self.assertEqual(doctor_list[0].user_name, AVI_USER_NAME)
 
+    def test_waiting_list_in_db(self):
+        self.doctor_avi.is_busy = True
+        self.doctor_avi.try_treat(self.patient_yosi)
+        DbConnector.add_waiting_list_member(
+            self.doctor_avi.user_name, self.patient_yosi.user_name, self.doctor_avi.waiting_list.id, str(datetime.datetime.now()))
+        list_tuple = DbConnector.get_appointments_get_waiting_list_members_by_list_id(
+            self.doctor_avi.waiting_list.id)
+        self.assertTrue(len(list_tuple) >= 1)
 
 if __name__ == "__main__":
     unittest.main()

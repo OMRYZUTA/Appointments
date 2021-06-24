@@ -6,6 +6,7 @@ def main():
     DbConnector.create_appointment_table()
     DbConnector.create_doctor_table()
     DbConnector.create_patient_table()
+    DbConnector.create_waiting_list_member_table()
 
 
 if __name__ == '__main__':
