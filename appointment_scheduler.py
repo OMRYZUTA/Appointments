@@ -5,4 +5,4 @@ class AppointmentScheduler():
         self.doctors_list = doctors_list
 
     def get_available_doctors(self):
-        return list(filter(lambda x: True if not x.is_busy else False, self.doctors_list))
+        return list(filter(lambda x:  not x.is_busy, self.doctors_list))

@@ -4,6 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+console-menu = "*"
 
 [dev-packages]
 autopep8 = "*"

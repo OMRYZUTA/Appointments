@@ -1,12 +1,10 @@
 from db_connector import DbConnector
+from controller import Controller
+
 
 
 def main():
-    DbConnector.create_user_table()
-    DbConnector.create_appointment_table()
-    DbConnector.create_doctor_table()
-    DbConnector.create_patient_table()
-    DbConnector.create_waiting_list_member_table()
+    Controller.run()
 
 
 if __name__ == '__main__':
