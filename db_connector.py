@@ -110,6 +110,13 @@ class DbConnector():
                 "INSERT INTO waiting_list_members (doctor_user_name, patient_user_name, id, date) VALUES(?, ?, ?, ?);", (doctor_user_name, patient_user_name, waiting_list_id, date))
 
     @staticmethod
+    def remove_waiting_list_member(patient_user_name, doctor_user_name, waiting_list_id):
+        with sqlite3.connect(MEDICAL_DATABASE_NAME) as sqliteConnection:
+            cursor = sqliteConnection.cursor()
+            cursor.execute(
+                "DELETE FROM waiting_list_members WHERE doctor_user_name = ? AND patient_user_name = ? AND id = ?;", (doctor_user_name, patient_user_name, waiting_list_id))
+
+    @staticmethod
     def get_appointments_by_patient_user_name(patient_user_name):
         with sqlite3.connect(MEDICAL_DATABASE_NAME) as sqliteConnection:
             cursor = sqliteConnection.cursor()

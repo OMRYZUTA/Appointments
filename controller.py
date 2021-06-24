@@ -56,19 +56,21 @@ class Controller():
         if(sign_up_result):
             Controller.operate_doctor_screen(user_name, name, password)
         else:
+            print('sign up failed, please choose another user name')
             Controller.run_menu()
 
     @staticmethod
     def operate_doctor_screen(user_name, name, password):
         pass
-    
 
     @staticmethod
     def operate_doctor_login():
         pass
+
     @staticmethod
     def operate_patient_sign_up():
         pass
+
     @staticmethod
     def operate_patient_login():
         pass
