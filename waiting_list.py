@@ -16,7 +16,7 @@ class WaitingList():
         if patient in self.patients_list:
             self.patients_list.remove(patient)
             DbConnector.remove_waiting_list_member(
-                self.doctor_user_name, patient.user_name, self.id)
+                self.doctor_user_name, patient.user_name)
 
     def append_patient(self, patient):
         if(self.patients_list == None):

@@ -97,11 +97,11 @@ class DbConnector():
                 "INSERT INTO waiting_list_members (doctor_user_name, patient_user_name, id, date) VALUES(?, ?, ?, ?);", (doctor_user_name, patient_user_name, waiting_list_id, date))
 
     @staticmethod
-    def remove_waiting_list_member(patient_user_name, doctor_user_name, waiting_list_id):
+    def remove_waiting_list_member(patient_user_name, doctor_user_name):
         with sqlite3.connect(MEDICAL_DATABASE_NAME) as sqliteConnection:
             cursor = sqliteConnection.cursor()
             cursor.execute(
-                "DELETE FROM waiting_list_members WHERE doctor_user_name = ? AND patient_user_name = ? AND id = ?;", (doctor_user_name, patient_user_name, waiting_list_id))
+                "DELETE FROM waiting_list_members WHERE doctor_user_name = ? AND patient_user_name = ? ;", (doctor_user_name, patient_user_name))
 
     @staticmethod
     def get_appointments_by_patient_user_name(patient_user_name):
@@ -120,6 +120,14 @@ class DbConnector():
             return tuple(result)
 
     @staticmethod
+    def get_waiting_list_members_by_patient_user_name(patient_user_name):
+        with sqlite3.connect(MEDICAL_DATABASE_NAME) as sqliteConnection:
+            cursor = sqliteConnection.cursor()
+            result = cursor.execute(
+                "SELECT doctor_user_name FROM waiting_list_members WHERE doctor_user_name = ?", [patient_user_name])
+            return tuple(result)
+
+    @staticmethod
     def auth_patient(user_name, password):
         with sqlite3.connect(MEDICAL_DATABASE_NAME) as sqliteConnection:
             cursor = sqliteConnection.cursor()
@@ -133,4 +141,12 @@ class DbConnector():
             cursor = sqliteConnection.cursor()
             result = cursor.execute(
                 "SELECT user_name, name, password waiting_list_id FROM doctors WHERE user_name = ? AND password = ?", [user_name, password])
+            return(tuple(result))
+
+    @staticmethod
+    def get_doctors_list():
+        with sqlite3.connect(MEDICAL_DATABASE_NAME) as sqliteConnection:
+            cursor = sqliteConnection.cursor()
+            result = cursor.execute(
+                "SELECT user_name, password FROM doctors ")
             return(tuple(result))

@@ -79,35 +79,6 @@ class TestAppointments(unittest.TestCase):
         self.assertEqual(doctor.name, AVI_NAME)
         self.assertEqual(doctor.user_name, AVI_USER_NAME)
 
-    # def test_doctor_TryTreat(self):
-    #     doctor = Doctor(AVI_USER_NAME, AVI_NAME, AVI_PASSWORD)
-    #     result = doctor.try_treat(self.doctor_avi)
-    #     self.assertTrue(result)
-
-    # def test_doctor_TryTreat_delay(self):
-    #     doctor = Doctor(AVI_USER_NAME, AVI_NAME, AVI_PASSWORD)
-    #     doctor.try_treat(self.patient_yosi)
-    #     result = doctor.try_treat(self.patient_jon)
-    #     for i in range(5):
-    #         time.sleep(1)
-    #     self.assertFalse(result)
-    #     for i in range(100):
-    #         time.sleep(1)
-    #     result = doctor.try_treat(self.patient_jon)
-    #     self.assertTrue(result)
-
-    # def test_doctor_TryTreat_waiting_list_add(self):
-    #     doctor = Doctor(AVI_USER_NAME, AVI_NAME, AVI_PASSWORD)
-    #     doctor.try_treat(self.patient_yosi)
-    #     for i in range(10):
-    #         time.sleep(1)
-    #     result = doctor.try_treat(self.patient_jon)
-    #     self.assertFalse(result)
-    #     waiting_list = doctor.waiting_list
-    #     self.assertEqual(len(waiting_list), 1)
-    #     result = doctor.try_treat(self.patient_jon)
-    #     self.assertEqual(len(waiting_list), 2)
-
     def test_patient_init(self):
         patient = Patient(JON_USER_NAME, JON_NAME, JON_PASSWORD)
         self.assertEqual(patient.name, JON_NAME)
@@ -176,11 +147,6 @@ class TestAppointments(unittest.TestCase):
         result = self.patient_jon.remove_from_waiting_list(AVI_USER_NAME)
         self.assertFalse(result)
 
-    def test_appointment_scheduler_init(self):
-        appScheduler = AppointmentScheduler([self.doctor_avi])
-        doctor_list = appScheduler.get_available_doctors()
-        self.assertEqual(doctor_list[0].user_name, AVI_USER_NAME)
-
     def test_waiting_list_in_db(self):
         self.doctor_avi.is_busy = True
         self.doctor_avi.try_treat(self.patient_yosi)
@@ -189,6 +155,7 @@ class TestAppointments(unittest.TestCase):
         list_tuple = DbConnector.get_waiting_list_members_by_doctor_user_name(
             AVI_USER_NAME)
         self.assertTrue(len(list_tuple) >= 1)
+        DbConnector.remove_waiting_list_member(YOSI_USER_NAME, AVI_USER_NAME)
 
     def test_waiting_list_is_empty(self):
         waiting_list = WaitingList(self.doctor_avi.user_name, [
@@ -196,17 +163,6 @@ class TestAppointments(unittest.TestCase):
         waiting_list.remove_patient(self.patient_yosi)
         waiting_list.remove_patient(self.patient_jon)
         self.assertTrue(waiting_list.is_empty())
-
-    # def test_doctor_treat_two_patients(self):
-    #     self.doctor_avi.try_treat(self.patient_jon)
-    #     for i in range(8):
-    #         time.sleep(1)
-    #     self.doctor_avi.try_treat(self.patient_yosi)
-    #     for i in range(150):
-    #         time.sleep(1)
-    #     appointment_tuple = DbConnector.get_appointments_by_patient_user_name(
-    #         YOSI_USER_NAME)
-    #     self.assertEqual((appointment_tuple[0])[0], YOSI_USER_NAME)
 
 
 if __name__ == "__main__":
